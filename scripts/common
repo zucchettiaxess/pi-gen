@@ -23,10 +23,15 @@ bootstrap(){
 	# https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1050719
 	rm -f wget-log*
 
-	if [ -d "$2/debootstrap" ] && ! rmdir "$2/debootstrap"; then
-		cp "$2/debootstrap/debootstrap.log" "${STAGE_WORK_DIR}"
-		log "bootstrap failed: please check ${STAGE_WORK_DIR}/debootstrap.log"
-		return 1
+	if [ -d "$2/debootstrap" ]; then
+		if [ -f "$2/debootstrap/debootstrap.log" ]; then
+			cp "$2/debootstrap/debootstrap.log" "${STAGE_WORK_DIR}"
+			log "bootstrap failed: please check ${STAGE_WORK_DIR}/debootstrap.log"
+			rm -rf "$2/debootstrap"
+			return 1
+		fi
+		# If debootstrap dir exists but no log, clean it up
+		rm -rf "$2/debootstrap"
 	fi
 }
 export -f bootstrap
